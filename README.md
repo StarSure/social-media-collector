@@ -12,8 +12,8 @@
 | B站 | 视频、UP主、评论、弹幕 | 单条视频及 Excel 导出 |
 | 抖音 | 达人、作品、评论 | 静态核对，待逐场景实测 |
 | 快手 | 达人、作品、评论 | 静态核对，待逐场景实测 |
-| TikTok | 原扩展达人、作品、评论；新增独立公开资料读取 | 新路径已匿名读取真实账号资料；作品列表遇403，其余待验 |
-| Instagram | 独立本地资料、帖子/Reels、可见评论采集器 | 合成页面与离线流程验证；登录后实采待验 |
+| TikTok | 原扩展达人、作品、评论；新增独立公开资料与匿名近期视频读取 | @tiktok匿名取得3条视频及播放/点赞；近期选集最多10条，后续请求曾429 |
+| Instagram | 独立本地资料、帖子/Reels、可见评论采集器 | 合成页面与离线流程验证；匿名主页视频及指标尚未跑通 |
 | 巨量星图 | 搜索、达人、作品 | 静态核对，待逐场景实测 |
 | 蒲公英 | 搜索、博主、邀约记录、笔记 | 静态核对，待逐场景实测 |
 
@@ -80,6 +80,23 @@ node scripts/browser.mjs prepare --endpoint http://127.0.0.1:9337 --spec example
 
 手动装载不需要 Node 或 Playwright。平台页面仍需相应登录、签名环境与权限。
 
+## TikTok免登录主页视频
+
+v0.3.0新增`scripts/anonymous-homepage.mjs`，独立启动临时无头Chrome，使用全新游客上下文，不连接现有浏览器、不载入用户profile或Cookie。直接读取官方主页嵌入中的真实视频链接，再读取各视频详情的公开SSR数据；不接商业采集API。
+
+```sh
+node scripts/anonymous-homepage.mjs plan --spec examples/tiktok-videos-anonymous.json
+node scripts/anonymous-homepage.mjs collect --spec /absolute/path/to/job.json
+```
+
+复制示例并替换主页链接及输出目录；`limitPerId`必填且为1至10。无需先启动`browser.mjs launch`。找不到本机Chrome时用`--browser`指定路径（Windows同样适用），或设置`SOCIAL_BROWSER_EXECUTABLE`；不自动下载浏览器。
+
+输出每条视频的ID、作者、描述、发布时间（Unix秒原文）、时长、播放量`playCount`、点赞量`likeCount`、评论数、分享数和收藏数，以及逐字段来源。缺失为null；缺少播放或点赞时报告partial。计数保留平台报告值，平台可能已经取整，不能称为未经取整的精确次数。
+
+2026-10-20真实匿名探针已从@tiktok发现3条视频并取得逐条播放/点赞等指标。这只证明该样本当时可用；后续一次访问嵌入入口返回429，已停止请求，不能保证任意账号或随时稳定可用。[官方文档](https://developers.tiktok.com/docs/en/embed-creator-profiles)说明嵌入最多提供近期10条选集，**不支持完整历史列表或翻页**。HTTP403/429、登录或验证码会停止整批，不切换身份或反复重试。
+
+**Instagram免登录主页视频列表及逐条播放/点赞暂未跑通，匿名命令明确拒绝该平台。** 既有Instagram采集器仍是离线验证的实验功能，不能作为本需求已完成的证明。游客预检、公开嵌入及返回字段的实际结果见[验收说明](references/verification.md)。
+
 ## Instagram与TikTok新增本地采集
 
 v0.2.0新增的自有采集器直接读取Chrome中公开呈现的DOM、JSON-LD或TikTok资料SSR数据，不调用商业数据API，也不需要服务商密钥。Instagram是实验实现，本轮用户没有可用账号，因此只做代码和离线验证；游客探针跳转登录页并遇到429后已停止重试。
@@ -121,7 +138,7 @@ npm test
 npm run test:browser
 python3 -m unittest discover -s tests -p 'test_*.py'
 npm run check
-python3 scripts/package_skill.py --output dist/social-media-collector-0.2.0.zip
+python3 scripts/package_skill.py --output dist/social-media-collector-0.3.0.zip
 ```
 
 打包入口先核验29个运行资源的 SHA-256，只打包明确列出的项目文件；不会包含 `.git`、`node_modules`、浏览器配置或采集结果。扩展是编译后的运行快照，不是原厂 TypeScript 源码。修改扩展后需审阅变化并更新 `assets/runtime-manifest.json` 中相应摘要。

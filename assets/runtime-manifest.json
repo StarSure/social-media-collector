@@ -134,7 +134,7 @@
       "sha256": "0d4f284610b31fffaf57bf1f3d0d73b3251b146d919f2e02abdeac0b90cfaede"
     }
   ],
-  "distributionVersion": "0.2.0",
+  "distributionVersion": "0.3.0",
   "distributionChanges": [
     "Removed upstream build-machine debug paths; platform request and collection logic unchanged."
   ]

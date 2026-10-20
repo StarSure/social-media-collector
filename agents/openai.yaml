@@ -1,4 +1,4 @@
 interface:
   display_name: "多平台社媒采集"
-  short_description: "本地社媒采集与导出核验，新增TikTok公开资料和Instagram实验采集器"
+  short_description: "本地社媒采集与导出核验，TikTok免登录近期视频与指标有限实测；Instagram仍在实验阶段"
   default_prompt: "使用 $social-media-collector 按指定平台、链接或关键词采集数据，并导出本地文件和核验结果。"

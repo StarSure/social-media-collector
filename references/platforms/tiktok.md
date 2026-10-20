@@ -2,6 +2,22 @@
 
 原扩展证据日期：2026-10-19，三类任务均仅静态核对。2026-10-20另新增自有公开账号资料读取路径，已完成有限匿名实测；两种路径不能混同。
 
+## v0.3.0免登录近期主页视频
+
+入口`scripts/anonymous-homepage.mjs`，任务示例[TikTok匿名视频](../../examples/tiktok-videos-anonymous.json)。每次运行独立临时Chrome；模块使用全新游客上下文读取`/embed/@username`实际视频链接，另用禁用页面JS的全新上下文读取真实详情SSR的`webapp.video-detail.itemInfo.itemStruct`。不导入用户会话，不请求此前失败的作者列表私有接口。
+
+`limitPerId`显式为1至10；官方Creator Profile Embed只提供近期最多10条选集，不支持全历史分页。按实际链接的视频ID和详情作者双重核验；两者任一不匹配则停止。逐条输出playCount、likeCount、commentCount、shareCount、collectCount和metricSources（statsV2或stats来源）。缺失为null；播放或点赞缺失标partial，不补0。publishedAt保留Unix秒原文，长ID保留字符串；metricPrecision明确平台可能已取整。
+
+2026-10-20 fresh anonymous Chrome：官方oEmbed和嵌入页HTTP200，发现@tiktok真实视频链接；3条详情HTTP200读到如下平台报告值：
+
+| 视频ID | 播放量 | 点赞量 |
+| --- | ---: | ---: |
+| 7694797676306615583 | 1400000 | 12100 |
+| 7693184538704416031 | 467600 | 14900 |
+| 7692114317151423775 | 456200 | 12400 |
+
+上述是实际探针结果；新CLI的合成页面测试不算又一次线上成功。后续一次独立嵌入请求返回429，停止该路径；不能保证当前重跑成功、任意账号可用或数值不变。403/429、登录/验证码和字段归属异常停止整批；不换身份重试。
+
 ## 新增公开资料路径
 
 `scripts/local-browser.mjs`的`platform=tiktok/task=author/source=links`读取真实主页的`__UNIVERSAL_DATA_FOR_REHYDRATION__.__DEFAULT_SCOPE__['webapp.user-detail'].userInfo`，只提取user/stats中的公开白名单字段，不返回app context、Cookie或会话数据。示例见 [TikTok资料任务](../../examples/tiktok-profile-local.json)。先plan，再连接专用Chrome执行collect；输出JSON/CSV及状态报告。
@@ -30,7 +46,7 @@ MAIN world 从 window.__$UNIVERSAL_DATA$__.__DEFAULT_SCOPE__ 或 __UNIVERSAL_DAT
 
 ## 待验
 
-网络和登录预检后，依次验证单作品 API 与 Excel、关键词两页、作者作品、图片作品、评论/子评论、RPA。当前无真实平台采集、分页或导出通过记录。
+网络和登录预检后，依次验证单作品 API 与 Excel、关键词两页、作者作品、图片作品、评论/子评论、RPA。原扩展链路仍无真实平台采集、分页或导出通过记录；新增匿名近期选集的有限样本见上文。
 
 ## 证据定位
 

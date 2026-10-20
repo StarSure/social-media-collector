@@ -19,4 +19,5 @@ jobs:
       - run: python3 -m unittest discover -s tests -p 'test_*.py'
       - run: npm run check
       - run: npm run plan
-      - run: python3 scripts/package_skill.py --output dist/social-media-collector-0.2.0.zip
+      - run: node scripts/anonymous-homepage.mjs plan --spec examples/tiktok-videos-anonymous.json
+      - run: python3 scripts/package_skill.py --output dist/social-media-collector-0.3.0.zip

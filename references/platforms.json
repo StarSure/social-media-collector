@@ -325,7 +325,27 @@
           },
           "notes": "原任务没有 collectBy 分派；使用 urls 和每条链接的数量上限。sources 为空不表示没有采集来源。"
         }
-      ]
+      ],
+      "anonymousHomepage": {
+        "runner": "scripts/anonymous-homepage.mjs",
+        "state": "limited-live-probe-verified",
+        "date": "2026-10-20",
+        "task": "video",
+        "source": "author-links",
+        "limitPerId": {
+          "min": 1,
+          "max": 10
+        },
+        "coverage": "recent official embed selection only; no full history",
+        "cases": [
+          "@tiktok official creator embed discovered 3 videos; public detail SSR returned per-video play/like/comment/share/collect counts."
+        ],
+        "limitations": [
+          "Later embed probe returned HTTP429; stop without retry.",
+          "New CLI is offline tested separately; live probe does not establish long-term availability.",
+          "Counts are platform-reported and may be rounded."
+        ]
+      }
     },
     {
       "id": "xingtu",

@@ -1,6 +1,6 @@
 ---
 name: social-media-collector
-description: 使用本地扩展和浏览器采集小红书、抖音、B站、快手、TikTok、Instagram、巨量星图、蒲公英的公开资料、作品和评论，导出并核验；Instagram为离线验证阶段。适用于社媒助手、链接或关键词采集，不用于发布或商品上架。
+description: 使用本地扩展和浏览器采集小红书、抖音、B站、快手、TikTok、Instagram、巨量星图、蒲公英的公开资料、作品和评论，导出并核验；TikTok免登录近期视频有限实测，Instagram免登录尚未跑通。适用于社媒助手、链接或关键词采集，不用于发布或商品上架。
 ---
 
 # 多平台社媒采集
@@ -24,7 +24,20 @@ Instagram与新增TikTok公开资料路径使用自有`scripts/local-browser.mjs
 - [巨量星图：搜索/达人/作品](references/platforms/xingtu.md)
 - [蒲公英：搜索/博主/邀约记录/笔记](references/platforms/pgy.xiaohongshu.md)
 
-`verification`记录具体日期和场景。原扩展7平台23任务，另有Instagram三个本地任务；代码存在不等于线上通过。TikTok只有新增SSR资料路径有有限匿名实测，不能外推到原扩展、视频、评论或搜索。
+`verification`记录具体日期和场景。原扩展7平台23任务，另有Instagram三个本地任务；代码存在不等于线上通过。TikTok公开资料及新增匿名近期视频路径有有限实测，不能外推到原扩展、全部历史、评论或搜索。
+
+## 免登录账号主页视频
+
+用户要求免登录采集TikTok账号主页视频及逐条指标时，使用`scripts/anonymous-homepage.mjs`；先读[TikTok参考](references/platforms/tiktok.md)。它独立启动临时Chrome和全新游客上下文，不接CDP、不读取既有profile或登录会话，无需先launch专用浏览器。
+
+```sh
+node scripts/anonymous-homepage.mjs plan --spec examples/tiktok-videos-anonymous.json
+node scripts/anonymous-homepage.mjs collect --spec /absolute/path/to/job.json
+```
+
+任务为`tiktok/video/author-links`，主页链接和`limitPerId=1..10`必填，输出目录在Skill之外。官方嵌入只给近期最多10条选集，不能表示主页全部历史。每条播放/点赞缺失为null并报告partial；保留平台报告值及来源，不能把可能已取整的数值称为精确次数。403/429、登录或验证时整批停止，不切换身份。
+
+Instagram匿名主页视频及播放/点赞尚无成功实采，匿名命令明确返回INSTAGRAM_UNVERIFIED。不能用下方离线验证采集器、资料记录或已知单帖读取冒充本需求完成，也不在免登录请求中自动改为登录。
 
 ## Instagram与TikTok本地资料
 
