@@ -4,7 +4,7 @@
 
 ## v0.3.0免登录近期主页视频
 
-入口`scripts/anonymous-homepage.mjs`，任务示例[TikTok匿名视频](../../examples/tiktok-videos-anonymous.json)。每次运行独立临时Chrome；模块使用全新游客上下文读取`/embed/@username`实际视频链接，另用禁用页面JS的全新上下文读取真实详情SSR的`webapp.video-detail.itemInfo.itemStruct`。不导入用户会话，不请求此前失败的作者列表私有接口。
+入口`scripts/anonymous-homepage.mjs`，任务示例[TikTok匿名视频](../../examples/tiktok-videos-anonymous.json)。每次运行独立临时Chrome；模块在全新游客上下文先读官方`/oembed`，校验作者和creator类型后，用受控本地页面加载唯一固定的官方`embed.js`，等待SDK实际创建的TikTok iframe，优先纯JSON解析__FRONTITY_CONNECT_STATE__.source.data中匹配公开作者的videoList（动态key、非私有项、作者及ID校验、去重），无该数据时才读取真实DOM视频链接；不猜iframe query或直接顶层导航到iframe地址。另用禁用页面JS的全新上下文读取真实详情SSR的`webapp.video-detail.itemInfo.itemStruct`。不导入用户会话，不请求此前失败的作者列表私有接口。
 
 `limitPerId`显式为1至10；官方Creator Profile Embed只提供近期最多10条选集，不支持全历史分页。按实际链接的视频ID和详情作者双重核验；两者任一不匹配则停止。逐条输出playCount、likeCount、commentCount、shareCount、collectCount和metricSources（statsV2或stats来源）。缺失为null；播放或点赞缺失标partial，不补0。publishedAt保留Unix秒原文，长ID保留字符串；metricPrecision明确平台可能已取整。
 
@@ -16,7 +16,9 @@
 | 7693184538704416031 | 467600 | 14900 |
 | 7692114317151423775 | 456200 | 12400 |
 
-上述是实际探针结果；新CLI的合成页面测试不算又一次线上成功。后续一次独立嵌入请求返回429，停止该路径；不能保证当前重跑成功、任意账号可用或数值不变。403/429、登录/验证码和字段归属异常停止整批；不换身份重试。
+v0.3.2补充：用户提供样本的源URL作者与当前视频详情作者不同，核对视频ID后仅在本地解析当前作者。正式匿名CLI按limit=1从该主页JSON选集发现真实视频，详情得到播放4679、点赞540及评论10，导出completed；该主页嵌入共9项，但只补采1项详情。
+
+上述是实际探针结果；新CLI的合成页面测试不算又一次线上成功。后续一次独立嵌入请求返回429，停止该路径；不能保证当前重跑成功、任意账号可用或数值不变。403/429、登录/验证码和字段归属异常停止整批；不换身份重试。HTTP失败报告区分oembed、embed-sdk、creator-iframe、video-detail阶段，Retry-After未提供则保持null。400等非成功响应只保留公开错误字段，不导出Cookie或会话。视频源URL的作者名可能不等于当前详情作者；按实际视频ID确认身份后才派生当前主页，原源链接保持不变。
 
 ## 新增公开资料路径
 

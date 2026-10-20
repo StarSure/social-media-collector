@@ -98,6 +98,8 @@ node scripts/anonymous-homepage.mjs collect --spec /absolute/path/to/job.json
 
 **Instagram已免登录取得3条主页视频及各自观看次数、点赞数。** 观看次数来自`video_view_count`，保存为`viewCount`；平台另一个字段`play_count`未返回，`playCount`保持null，两者不互相代填。例：首条观看6369903、点赞114714。若观看和播放两项均缺失，或点赞缺失，运行必须为partial。既有DOM/JSON-LD采集器仍是离线验证的实验功能，其状态与新SSR路径分开。公开路径及字段实证见[验收说明](references/verification.md)。
 
+v0.3.2将TikTok入口恢复为官方oEmbed→固定官方SDK→SDK实际创建的iframe，避免直接顶层打开iframe地址。优先解析真实iframe中的公开作者videoList JSON，排除私有项并去重，避免只等视觉加载漏掉已有视频。用户提供样本已由正式匿名CLI完成1条主页视频的播放/点赞采集；有限实测不代表持续稳定或全部历史。400等错误保留公开错误说明，403/429另记录阶段及Retry-After（未给则为null）；不能仅凭状态码承诺等多久恢复。输入来自既有视频链接时，URL中的作者名可能与当前详情作者不同，应按真实视频ID核对当前作者再定位主页，不回写源表。
+
 ## Instagram与TikTok新增本地采集
 
 v0.2.0新增的自有采集器直接读取Chrome中公开呈现的DOM、JSON-LD或TikTok资料SSR数据，不调用商业数据API，也不需要服务商密钥。该DOM采集器在v0.2.0实现时只做代码和离线验证；游客探针跳转登录页并遇到429后已停止重试。
@@ -139,7 +141,7 @@ npm test
 npm run test:browser
 python3 -m unittest discover -s tests -p 'test_*.py'
 npm run check
-python3 scripts/package_skill.py --output dist/social-media-collector-0.3.1.zip
+python3 scripts/package_skill.py --output dist/social-media-collector-0.3.2.zip
 ```
 
 打包入口先核验29个运行资源的 SHA-256，只打包明确列出的项目文件；不会包含 `.git`、`node_modules`、浏览器配置或采集结果。扩展是编译后的运行快照，不是原厂 TypeScript 源码。修改扩展后需审阅变化并更新 `assets/runtime-manifest.json` 中相应摘要。

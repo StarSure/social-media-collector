@@ -1,5 +1,13 @@
 # 验收与证据
 
+## v0.3.2官方TikTok嵌入流程
+
+独立比较发现：此前成功探针为oEmbed→官方SDK→真实子iframe，发布模块却直接顶层打开iframe地址。现恢复成功探针的正常加载链，使用规范化blockquote及唯一固定官方脚本，丢弃返回HTML中额外脚本、事件属性和外站内容；官方SDK所需动态CDN资源仍按正常网页机制加载。实际iframe URL由SDK产生，只校验来源和作者路径，不猜query/签名。
+
+新增离线回归覆盖oEmbed身份、受控HTML、oEmbed/iframe/详情阶段403/429及Retry-After、400公开错误说明和SDK真实子frame上下文；Node回归89项，Chrome合计46项（17+16+13）。未用测试响应冒充平台数据。
+
+追加有限匿名实测发现：源视频URL用户名与当前真实详情作者不一致，视频ID一致且单视频SSR可读；按当前作者请求oEmbed和SDK实际iframe均HTTP200。第一次仅等DOM未发现链接，保留真实iframe首文档后确认__FRONTITY_CONNECT_STATE__.source.data动态key内含9项公开videoList；已补纯JSON解析、作者校验、私有项排除和ID去重，不固定query。独立真实HTML离线解析和零DOM链接Chrome场景均核验通过。随后正式CLI用全新无头Chrome、无CDP/profile/登录会话运行limit=1，从主页发现真实视频并读详情，导出1条completed记录：播放4679、点赞540、评论10、分享9、收藏5，均来源statsV2平台报告值。9项仅代表嵌入选集，未宣称9条点赞全部补齐；本次单条成功不能证明任意账号或持续稳定可用。没有修改来源表格。
+
 ## v0.3.1隐藏指标修正
 
 真实试采发现：主页已明确隐藏计数，详情却可能返回普通0。现保留主页的hidden未知状态，不让详情0覆盖为已知值；详情明确hidden时也会清除主页旧计数。独立Chrome回归新增该场景，Instagram匿名验收13项通过，三组Chrome离线场景合计41项。此前83项Node与3项Python检查的范围保持不变；没有为复验重发真实社媒请求。
