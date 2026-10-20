@@ -1,0 +1,4 @@
+interface:
+  display_name: "多平台社媒采集"
+  short_description: "统一调用七个平台采集器，复用真实浏览器签名、分页、导出和验收流程"
+  default_prompt: "使用 $social-media-collector 按指定平台、链接或关键词采集数据，并导出本地文件和核验结果。"

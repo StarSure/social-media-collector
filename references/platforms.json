@@ -1,0 +1,441 @@
+{
+  "schemaVersion": 1,
+  "evidenceDate": "2026-10-19",
+  "platforms": [
+    {
+      "id": "douyin",
+      "name": "抖音",
+      "aliases": [
+        "抖音",
+        "dy"
+      ],
+      "homeUrl": "https://www.douyin.com",
+      "hosts": [
+        "www.douyin.com",
+        "v.douyin.com",
+        "www.iesdouyin.com"
+      ],
+      "reference": "references/platforms/douyin.md",
+      "tasks": [
+        {
+          "id": "author",
+          "label": "达人",
+          "route": "/douyin/batch-collect/author",
+          "sources": [
+            "links",
+            "keyword"
+          ],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          }
+        },
+        {
+          "id": "aweme",
+          "label": "作品",
+          "route": "/douyin/batch-collect/aweme",
+          "sources": [
+            "keyword",
+            "links",
+            "mix-links",
+            "author-links",
+            "favorite",
+            "jingxuan"
+          ],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          },
+          "notes": "主表单提供关键词、作品链接、合集链接、达人链接；favorite/jingxuan 来自页面入口。"
+        },
+        {
+          "id": "comment",
+          "label": "评论",
+          "route": "/douyin/batch-collect/comment",
+          "sources": [],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          },
+          "notes": "原任务没有 collectBy 分派；使用 urls 和每条链接的数量上限。sources 为空不表示没有采集来源。"
+        }
+      ]
+    },
+    {
+      "id": "xiaohongshu",
+      "name": "小红书",
+      "aliases": [
+        "小红书",
+        "xhs",
+        "rednote"
+      ],
+      "homeUrl": "https://www.xiaohongshu.com",
+      "hosts": [
+        "www.xiaohongshu.com",
+        "www.rednote.com",
+        "xhslink.com",
+        "xhslink.cn"
+      ],
+      "reference": "references/platforms/xiaohongshu.md",
+      "tasks": [
+        {
+          "id": "blogger",
+          "label": "博主",
+          "route": "/xiaohongshu/batch-collect/blogger",
+          "sources": [
+            "links",
+            "keyword"
+          ],
+          "verification": {
+            "state": "live-verified",
+            "cases": [
+              "公开博主链接 API 采集 3 位，Excel 3 行 10 列；字段与原始平台记录核对"
+            ]
+          },
+          "notes": "仅 links API 样本已实测；关键词博主搜索未验。"
+        },
+        {
+          "id": "comment",
+          "label": "评论",
+          "route": "/xiaohongshu/batch-collect/comment",
+          "sources": [],
+          "verification": {
+            "state": "live-verified",
+            "cases": [
+              "真实笔记一级评论 API 采集 5 条，Excel 5 行 12 列、5 个唯一 ID"
+            ]
+          },
+          "notes": "原任务没有 collectBy 分派；使用 urls 和每条链接的数量上限。sources 为空不表示没有采集来源。 仅一级评论 API 已验；子评论/RPA 未验。"
+        },
+        {
+          "id": "note",
+          "label": "笔记",
+          "route": "/xiaohongshu/batch-collect/note",
+          "sources": [
+            "keyword",
+            "author-links",
+            "links",
+            "board-links",
+            "homefeed",
+            "ai-chat",
+            "red-video"
+          ],
+          "verification": {
+            "state": "live-verified",
+            "cases": [
+              "完整链接 API 采集 3 条图文/视频笔记，Excel 3 行 19 列",
+              "关键词「小学语文」API 第 1、2 页采集 25 个唯一笔记，Excel 25 行 20 列",
+              "13/25 暂停后继续、重新装载历史与重采通过；最终笔记/评论/博主共 220 项字段核对零差异"
+            ]
+          },
+          "notes": "主表单仅 links/author-links/keyword；board-links 路由 /xiaohongshu/hidden-collect/board-note；homefeed/ai-chat/red-video 为页面触发且仅 RPA。cases 不涵盖额外来源。"
+        }
+      ]
+    },
+    {
+      "id": "bilibili",
+      "name": "哔哩哔哩",
+      "aliases": [
+        "B站",
+        "哔哩哔哩",
+        "b站"
+      ],
+      "homeUrl": "https://www.bilibili.com",
+      "hosts": [
+        "www.bilibili.com",
+        "space.bilibili.com",
+        "search.bilibili.com",
+        "b23.tv"
+      ],
+      "reference": "references/platforms/bilibili.md",
+      "tasks": [
+        {
+          "id": "comment",
+          "label": "评论",
+          "route": "/bilibili/batch-collect/comment",
+          "sources": [],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          },
+          "notes": "原任务没有 collectBy 分派；使用 urls 和每条链接的数量上限。sources 为空不表示没有采集来源。 数量字段为 limit。"
+        },
+        {
+          "id": "danmaku",
+          "label": "弹幕",
+          "route": "/bilibili/batch-collect/danmaku",
+          "sources": [],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          },
+          "notes": "原任务没有 collectBy 分派；使用 urls、limit 及弹幕分段/历史条件。"
+        },
+        {
+          "id": "uploader",
+          "label": "UP主",
+          "route": "/bilibili/batch-collect/uploader",
+          "sources": [
+            "links",
+            "keywords"
+          ],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          },
+          "notes": "关键词枚举为 keywords（复数）。"
+        },
+        {
+          "id": "video",
+          "label": "视频",
+          "route": "/bilibili/batch-collect/video",
+          "sources": [
+            "links",
+            "author-links",
+            "keywords"
+          ],
+          "verification": {
+            "state": "live-verified",
+            "cases": [
+              "BV1xx411c7mD 真实 API 视频采集及导出，Excel 1 行 21 列；ID/标题/UP主/互动数独立核对"
+            ]
+          },
+          "notes": "只有单链接 API 已验；UP主列表、关键词分页、RPA、媒体下载未验。"
+        }
+      ]
+    },
+    {
+      "id": "kuaishou",
+      "name": "快手",
+      "aliases": [
+        "快手",
+        "ks"
+      ],
+      "homeUrl": "https://www.kuaishou.com",
+      "hosts": [
+        "www.kuaishou.com",
+        "live.kuaishou.com",
+        "v.kuaishou.com"
+      ],
+      "reference": "references/platforms/kuaishou.md",
+      "tasks": [
+        {
+          "id": "author",
+          "label": "达人",
+          "route": "/kuaishou/batch-collect/author",
+          "sources": [
+            "links",
+            "keyword"
+          ],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          }
+        },
+        {
+          "id": "comment",
+          "label": "评论",
+          "route": "/kuaishou/batch-collect/comment",
+          "sources": [],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          },
+          "notes": "原任务没有 collectBy 分派；使用 urls 和每条链接的数量上限。sources 为空不表示没有采集来源。"
+        },
+        {
+          "id": "photo",
+          "label": "视频",
+          "route": "/kuaishou/batch-collect/photo",
+          "sources": [
+            "author-links",
+            "links",
+            "keyword"
+          ],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "tiktok",
+      "name": "TikTok",
+      "aliases": [
+        "TikTok",
+        "国际版抖音"
+      ],
+      "homeUrl": "https://www.tiktok.com",
+      "hosts": [
+        "www.tiktok.com",
+        "vt.tiktok.com"
+      ],
+      "reference": "references/platforms/tiktok.md",
+      "tasks": [
+        {
+          "id": "author",
+          "label": "达人",
+          "route": "/tiktok/batch-collect/author",
+          "sources": [
+            "keyword",
+            "links"
+          ],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          }
+        },
+        {
+          "id": "aweme",
+          "label": "作品",
+          "route": "/tiktok/batch-collect/aweme",
+          "sources": [
+            "links",
+            "author-links",
+            "keyword"
+          ],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          }
+        },
+        {
+          "id": "comment",
+          "label": "评论",
+          "route": "/tiktok/batch-collect/comment",
+          "sources": [],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          },
+          "notes": "原任务没有 collectBy 分派；使用 urls 和每条链接的数量上限。sources 为空不表示没有采集来源。"
+        }
+      ]
+    },
+    {
+      "id": "xingtu",
+      "name": "巨量星图",
+      "aliases": [
+        "星图",
+        "巨量星图"
+      ],
+      "homeUrl": "https://www.xingtu.cn",
+      "hosts": [
+        "www.xingtu.cn"
+      ],
+      "reference": "references/platforms/xingtu.md",
+      "tasks": [
+        {
+          "id": "author-search",
+          "label": "达人广场列表",
+          "route": "/xingtu/hidden-collect/search-author",
+          "sources": [
+            "search"
+          ],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          },
+          "notes": "真实隐藏表单路由；collectDataScope=only-list 分派 author-search，其余分派 author。依赖平台页面入口传入 params 或 authors。"
+        },
+        {
+          "id": "author",
+          "label": "达人详情",
+          "route": "/xingtu/batch-collect/author",
+          "sources": [
+            "search",
+            "links"
+          ],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          },
+          "notes": "search 同样由 /xingtu/hidden-collect/search-author 分派；可接收已选 authors。"
+        },
+        {
+          "id": "aweme",
+          "label": "视频",
+          "route": "/xingtu/batch-collect/aweme",
+          "sources": [
+            "links",
+            "author-links"
+          ],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "pgy.xiaohongshu",
+      "name": "小红书蒲公英",
+      "aliases": [
+        "蒲公英",
+        "小红书蒲公英",
+        "pgy"
+      ],
+      "homeUrl": "https://pgy.xiaohongshu.com",
+      "hosts": [
+        "pgy.xiaohongshu.com"
+      ],
+      "reference": "references/platforms/pgy.xiaohongshu.md",
+      "tasks": [
+        {
+          "id": "blogger-search",
+          "label": "博主广场列表",
+          "route": "/pgy.xiaohongshu/hidden-collect/search-blogger",
+          "sources": [
+            "search"
+          ],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          },
+          "notes": "真实隐藏表单路由；collectDataScope=only-list 分派 blogger-search，其余分派 blogger。依赖平台页面入口传入 params 或 kols。"
+        },
+        {
+          "id": "blogger",
+          "label": "博主详情",
+          "route": "/pgy.xiaohongshu/batch-collect/blogger",
+          "sources": [
+            "search",
+            "links"
+          ],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          },
+          "notes": "search 同样由 /pgy.xiaohongshu/hidden-collect/search-blogger 分派；可接收已选 kols。"
+        },
+        {
+          "id": "invite",
+          "label": "合作邀约记录",
+          "route": "/pgy.xiaohongshu/hidden-collect/search-invite",
+          "sources": [],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          },
+          "notes": "原任务无 collectBy 分派，使用页面传入 params 与 limit。读取现有邀约；other/batch-invite 是发起邀约动作，不能替代此采集路由。联系方式字段依赖平台账户本身权限。"
+        },
+        {
+          "id": "note",
+          "label": "笔记",
+          "route": "/pgy.xiaohongshu/batch-collect/note",
+          "sources": [
+            "author-links",
+            "search",
+            "links"
+          ],
+          "verification": {
+            "state": "static-only",
+            "cases": []
+          },
+          "notes": "search 来自 /pgy.xiaohongshu/hidden-collect/search-note 热门商业内容入口，依赖 params。"
+        }
+      ]
+    }
+  ]
+}

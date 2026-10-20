@@ -1,0 +1,8 @@
+{
+  "platform": "xiaohongshu",
+  "task": "note",
+  "source": "keyword",
+  "mode": "api",
+  "keywords": ["小学语文"],
+  "limit": 25
+}

@@ -1,0 +1,141 @@
+{
+  "runtime": "social-assistant-local",
+  "version": "3.6.1-local.1",
+  "snapshotDate": "2026-10-19",
+  "originalArchiveSha256": "ffc70544d00fddcc8b214e6fe54e39e278d800e4a8502d4f5557fadad2a3ca5c",
+  "identity": "独立本地扩展，非原厂账号/会员",
+  "included": [
+    "UI与普通平台请求/页面签名",
+    "分页/解析/IndexedDB任务/原界面导出",
+    "小红书按关键词唯一笔记计数修复"
+  ],
+  "excluded": [
+    "用户Chrome配置与Cookie",
+    "登录会话和密钥",
+    "原厂动态高级脚本",
+    "原厂托管飞书令牌",
+    "公网模板分享"
+  ],
+  "files": [
+    {
+      "path": "_locales/zh_CN/messages.json",
+      "sha256": "c3f9dda3bcc45e54bb456c468c8bcdbb06bb1bd3b1a271ade319a2e4b47def72"
+    },
+    {
+      "path": "assets/bilibili.svg",
+      "sha256": "cc82e7eb88f4452f64045397da6e80a533358e602dab5c7ee4043519e0b4aa92"
+    },
+    {
+      "path": "assets/douyin.svg",
+      "sha256": "3b471c8ea24a7b65af2da74556193929c0f2535e83d65c0ca8f1fbbfc47ec64b"
+    },
+    {
+      "path": "assets/kuaishou.svg",
+      "sha256": "7395eaf91fd0ff704047eabec5d16b7f1753c57ee8c7bcb73a3326e33ea1d2b2"
+    },
+    {
+      "path": "assets/notice.svg",
+      "sha256": "c1715b601e261042f14d29e6ebc3179e98970dd811472b9eccbb8007e19bcf76"
+    },
+    {
+      "path": "assets/options-CCk2gNzX.css",
+      "sha256": "29044634da1a2f25a6e1c63ee45cdc1bfc36fd77377b8eb24f4eee5dc071de60"
+    },
+    {
+      "path": "assets/pgy.xiaohongshu.svg",
+      "sha256": "0d01d5176facbc2c495b6fddb7870eea53f2fecc6d7a025ac68ee45a5abf6ae9"
+    },
+    {
+      "path": "assets/sidepanel-BTXAb6Sk.css",
+      "sha256": "178e8a76dcc81c95d6f17edb34f67426be0f23f20b9da237a7086bc505fb9ad9"
+    },
+    {
+      "path": "assets/tiktok.svg",
+      "sha256": "fc58b56ee110328320d2f9918e57261efc47e3d9af0871f83bd7ecfa764f5b3e"
+    },
+    {
+      "path": "assets/xiaohongshu.svg",
+      "sha256": "5ffc04ff4315dd05388b4453b9563cba5e0589878742656fc215dd86da089180"
+    },
+    {
+      "path": "assets/xingtu.svg",
+      "sha256": "f296c1e37db61ab361f1751ef1f3fd6cffaf38cd47c900abb796db6ec1ee518f"
+    },
+    {
+      "path": "background.js",
+      "sha256": "a21b1d6d55c042f6e1d73d65364a8de419285be2f133d9c1cc534a66c6d1781f"
+    },
+    {
+      "path": "chunks/feishu-sync-config-C0L1G5N6.js",
+      "sha256": "c66be5bc58e93175ee2e42dda7a462b125a3fe7ed138a1a3a7293065cfc0a17a"
+    },
+    {
+      "path": "chunks/options-DWVobtrp.js",
+      "sha256": "25debe213eb1f0124e70eba438b32d37e8c4fd638570b7276e2eb8e751fa8f0c"
+    },
+    {
+      "path": "chunks/sidepanel-BdTwSbFs.js",
+      "sha256": "729e226155549688d3170309d47bc3808fbcb63aa164df043bf7f3f87947bf5a"
+    },
+    {
+      "path": "content-scripts/content.css",
+      "sha256": "f43a41117e79d9f3a298b8bd18875bb941691592702073ca3e2d7c5579738bba"
+    },
+    {
+      "path": "content-scripts/content.js",
+      "sha256": "63ed19ea3a88e81f5541c9ad17b933e32d2ee7ee2ca6f7bcdc8745dfa3a1df95"
+    },
+    {
+      "path": "content-scripts/main.js",
+      "sha256": "39deea435d0ecbf7cc178bb74f8e0954b06939198e836e4361b2aeac1e03638b"
+    },
+    {
+      "path": "icon/128.png",
+      "sha256": "84274c021f4060c13765c9953ef291b3f0b0e9f1d897b588d97a13ebd143cd70"
+    },
+    {
+      "path": "icon/16.png",
+      "sha256": "6ef21ec941d78fd060e89b212b2c8cd89ba5c406615422223dd40e1b68700e19"
+    },
+    {
+      "path": "icon/32.png",
+      "sha256": "19ba1d636153cea4ce9b564b59753ee373ec4733d307bca5f288db3cca8bda37"
+    },
+    {
+      "path": "icon/48.png",
+      "sha256": "cff7019e78b11b81bdb964bec4c1294b69135e13e84b3cbd73295b49abac69ec"
+    },
+    {
+      "path": "icon/96.png",
+      "sha256": "28fcd7b6fc3e495a1fd620841892751dcd67216696cdd7a6e2e1ddc20a5b59a6"
+    },
+    {
+      "path": "local-backend.js",
+      "sha256": "b94e49b0b086e1179b068084492b9fc21d18a6ee4f6d7290224e7f25b99d882e"
+    },
+    {
+      "path": "local-info.html",
+      "sha256": "8d3b49b132ed17bb94edaffb4ad52ebf54deafd5a3343b103f53f14b17fb76ad"
+    },
+    {
+      "path": "local-runtime.js",
+      "sha256": "561c3968255babc4ad40bbe557df78fb65da9d84a7536d3f856f6e2ced099cf4"
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "8c55b53d93a838dec52d378690b0d9e36d2e923f79933ca5c61b51a0b0ad1eac"
+    },
+    {
+      "path": "options.html",
+      "sha256": "1bbc70c568100bdb06d8e84fad810dc41e5477e7b4c16fa4d146f5beb76c3085"
+    },
+    {
+      "path": "sidepanel.html",
+      "sha256": "0d4f284610b31fffaf57bf1f3d0d73b3251b146d919f2e02abdeac0b90cfaede"
+    }
+  ],
+  "distributionVersion": "0.1.0",
+  "distributionChanges": [
+    "Removed upstream build-machine debug paths; platform request and collection logic unchanged."
+  ]
+}
