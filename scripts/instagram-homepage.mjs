@@ -175,8 +175,11 @@ export async function collectInstagramHomepage(browser, options) {
       if (videos.length !== 1 || videos[0].id !== record.id) throw fail('SHORTCODE_MISMATCH', 'The detail embed does not confirm the discovered video shortcode.');
       const combined = { ...record, fieldSources: Object.fromEntries(Object.entries(record.fieldSources).map(([key, path]) => [key, path && `profileEmbed.${path}`])) };
       const current = videos[0];
-      for (const key of ['playCount', 'viewCount', 'likeCount', 'commentCount']) if (current[key] !== null || current.fieldSources[key]?.endsWith(':hidden')) {
-        combined[key] = current[key]; combined.fieldSources[key] = `detailEmbed.${current.fieldSources[key]}`;
+      for (const key of ['playCount', 'viewCount', 'likeCount', 'commentCount']) {
+        if (combined.fieldSources[key]?.endsWith(':hidden')) continue;
+        if (current[key] !== null || current.fieldSources[key]?.endsWith(':hidden')) {
+          combined[key] = current[key]; combined.fieldSources[key] = `detailEmbed.${current.fieldSources[key]}`;
+        }
       }
       combined.caption = current.caption ?? record.caption;
       records.push({ ...combined, sourceUrl: spec.url, detailEmbedUrl: detailUrl, metricPrecision: 'platform-reported; original counter precision not guaranteed', collectedAt: new Date().toISOString() });

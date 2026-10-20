@@ -139,7 +139,7 @@ npm test
 npm run test:browser
 python3 -m unittest discover -s tests -p 'test_*.py'
 npm run check
-python3 scripts/package_skill.py --output dist/social-media-collector-0.3.0.zip
+python3 scripts/package_skill.py --output dist/social-media-collector-0.3.1.zip
 ```
 
 打包入口先核验29个运行资源的 SHA-256，只打包明确列出的项目文件；不会包含 `.git`、`node_modules`、浏览器配置或采集结果。扩展是编译后的运行快照，不是原厂 TypeScript 源码。修改扩展后需审阅变化并更新 `assets/runtime-manifest.json` 中相应摘要。

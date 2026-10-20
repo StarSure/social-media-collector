@@ -126,6 +126,17 @@ export async function runInstagramAnonymousBrowserFixtures(options = {}) {
       assert.equal(result.records[0].playCount, null); assert.equal(result.records[0].viewCount, null); assert.equal(result.records[0].likeCount, null);
       assert.equal(result.status, 'partial');
     });
+    await scenario('profile-hidden-counts-survive-detail-zero-without-hidden-flag', url => ({ body: instagramAnonymousHtml([instagramAnonymousMedia('ProfileHidden', url.pathname.includes('/p/')
+      ? { video_play_count: 0, video_view_count: 0, edge_liked_by: { count: 0 } }
+      : { like_and_view_counts_disabled: true })]) }), spec(1), result => {
+      assert.equal(result.recordCount, 1);
+      assert.equal(result.status, 'partial');
+      assert.equal(result.sources[0].termination, 'required-metrics-unavailable');
+      for (const field of ['playCount', 'viewCount', 'likeCount']) {
+        assert.equal(result.records[0][field], null);
+        assert.match(result.records[0].fieldSources[field], /^profileEmbed\..*:hidden$/);
+      }
+    });
     await scenario('ig-normal-shortfall-continues-next-account', url => {
       const next = url.pathname.includes('next_creator') || url.pathname.includes('/p/Next');
       const media = next ? [instagramAnonymousMedia('Next1', { owner: { username: 'next_creator' } }), instagramAnonymousMedia('Next2', { owner: { username: 'next_creator' } })] : [instagramAnonymousMedia('First')];
