@@ -8,7 +8,8 @@ test('anonymous runner accepts account homepage videos and explicit bounded limi
   assert.deepEqual(validateAnonymousSpec({ ...input, urls: ['https://tiktok.com/@sample?tracking=x'] }), input);
   for (const limitPerId of [undefined, 0, -1, 11, '3']) assert.throws(() => validateAnonymousSpec({ ...input, limitPerId }));
   for (const urls of [[], ['https://www.tiktok.com/@sample/video/123'], ['https://www.tiktok.com/@sample', 'https://www.tiktok.com/@SAMPLE/']]) assert.throws(() => validateAnonymousSpec({ ...input, urls }));
-  assert.throws(() => validateAnonymousSpec({ ...input, platform: 'instagram' }), error => error.code === 'INSTAGRAM_UNVERIFIED');
+  assert.equal(validateAnonymousSpec({ ...input, platform: 'instagram', urls: ['https://www.instagram.com/instagram/'] }).platform, 'instagram');
+  assert.throws(() => validateAnonymousSpec({ ...input, platform: 'instagram', urls: ['https://www.instagram.com/instagram/'], limitPerId: 7 }));
 });
 
 test('anonymous runner cannot attach to saved sessions, receive cookies, or change the source', () => {

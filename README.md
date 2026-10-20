@@ -13,7 +13,7 @@
 | 抖音 | 达人、作品、评论 | 静态核对，待逐场景实测 |
 | 快手 | 达人、作品、评论 | 静态核对，待逐场景实测 |
 | TikTok | 原扩展达人、作品、评论；新增独立公开资料与匿名近期视频读取 | @tiktok匿名取得3条视频及播放/点赞；近期选集最多10条，后续请求曾429 |
-| Instagram | 独立本地资料、帖子/Reels、可见评论采集器 | 合成页面与离线流程验证；匿名主页视频及指标尚未跑通 |
+| Instagram | 实验资料/帖子/评论；新增匿名主页视频选集 | 匿名主页选集→3条详情：观看次数及点赞已取得；play_count未返回 |
 | 巨量星图 | 搜索、达人、作品 | 静态核对，待逐场景实测 |
 | 蒲公英 | 搜索、博主、邀约记录、笔记 | 静态核对，待逐场景实测 |
 
@@ -80,26 +80,27 @@ node scripts/browser.mjs prepare --endpoint http://127.0.0.1:9337 --spec example
 
 手动装载不需要 Node 或 Playwright。平台页面仍需相应登录、签名环境与权限。
 
-## TikTok免登录主页视频
+## TikTok与Instagram免登录主页视频
 
-v0.3.0新增`scripts/anonymous-homepage.mjs`，独立启动临时无头Chrome，使用全新游客上下文，不连接现有浏览器、不载入用户profile或Cookie。直接读取官方主页嵌入中的真实视频链接，再读取各视频详情的公开SSR数据；不接商业采集API。
+v0.3.0新增`scripts/anonymous-homepage.mjs`，独立启动临时无头Chrome，使用全新游客上下文，不连接现有浏览器、不载入用户profile或Cookie。TikTok从官方主页嵌入发现真实视频链接，再读详情SSR；Instagram纯JSON解析公开主页嵌入首文档中的视频对象。提取器不执行脚本文本，不接商业采集API。
 
 ```sh
 node scripts/anonymous-homepage.mjs plan --spec examples/tiktok-videos-anonymous.json
+node scripts/anonymous-homepage.mjs plan --spec examples/instagram-videos-anonymous.json
 node scripts/anonymous-homepage.mjs collect --spec /absolute/path/to/job.json
 ```
 
-复制示例并替换主页链接及输出目录；`limitPerId`必填且为1至10。无需先启动`browser.mjs launch`。找不到本机Chrome时用`--browser`指定路径（Windows同样适用），或设置`SOCIAL_BROWSER_EXECUTABLE`；不自动下载浏览器。
+复制示例并替换主页链接及输出目录；`limitPerId`必填：TikTok为1至10，Instagram当前限1至6。两者均只采嵌入选集，不代表全部历史或严格最新排序。无需先启动`browser.mjs launch`。找不到本机Chrome时用`--browser`指定路径（Windows同样适用），或设置`SOCIAL_BROWSER_EXECUTABLE`；不自动下载浏览器。
 
-输出每条视频的ID、作者、描述、发布时间（Unix秒原文）、时长、播放量`playCount`、点赞量`likeCount`、评论数、分享数和收藏数，以及逐字段来源。缺失为null；缺少播放或点赞时报告partial。计数保留平台报告值，平台可能已经取整，不能称为未经取整的精确次数。
+两平台均输出视频ID、作者、正文、相关计数和字段来源。TikTok另含发布时间（Unix秒原文）、时长及分享/收藏数；Instagram含独立的`viewCount`和`playCount`。缺失为null；TikTok缺少播放或点赞时报告partial；Instagram缺少观看/播放两者或点赞时报告partial。计数保留平台报告值，平台可能已经取整，不能称为未经取整的精确次数。
 
 2026-10-20真实匿名探针已从@tiktok发现3条视频并取得逐条播放/点赞等指标。这只证明该样本当时可用；后续一次访问嵌入入口返回429，已停止请求，不能保证任意账号或随时稳定可用。[官方文档](https://developers.tiktok.com/docs/en/embed-creator-profiles)说明嵌入最多提供近期10条选集，**不支持完整历史列表或翻页**。HTTP403/429、登录或验证码会停止整批，不切换身份或反复重试。
 
-**Instagram免登录主页视频列表及逐条播放/点赞暂未跑通，匿名命令明确拒绝该平台。** 既有Instagram采集器仍是离线验证的实验功能，不能作为本需求已完成的证明。游客预检、公开嵌入及返回字段的实际结果见[验收说明](references/verification.md)。
+**Instagram已免登录取得3条主页视频及各自观看次数、点赞数。** 观看次数来自`video_view_count`，保存为`viewCount`；平台另一个字段`play_count`未返回，`playCount`保持null，两者不互相代填。例：首条观看6369903、点赞114714。若观看和播放两项均缺失，或点赞缺失，运行必须为partial。既有DOM/JSON-LD采集器仍是离线验证的实验功能，其状态与新SSR路径分开。公开路径及字段实证见[验收说明](references/verification.md)。
 
 ## Instagram与TikTok新增本地采集
 
-v0.2.0新增的自有采集器直接读取Chrome中公开呈现的DOM、JSON-LD或TikTok资料SSR数据，不调用商业数据API，也不需要服务商密钥。Instagram是实验实现，本轮用户没有可用账号，因此只做代码和离线验证；游客探针跳转登录页并遇到429后已停止重试。
+v0.2.0新增的自有采集器直接读取Chrome中公开呈现的DOM、JSON-LD或TikTok资料SSR数据，不调用商业数据API，也不需要服务商密钥。该DOM采集器在v0.2.0实现时只做代码和离线验证；游客探针跳转登录页并遇到429后已停止重试。
 
 先按上文启动专用浏览器，再检查新任务：
 
@@ -114,7 +115,7 @@ node scripts/local-browser.mjs plan --spec examples/instagram-posts-local.json
 node scripts/local-browser.mjs collect --endpoint http://127.0.0.1:9337 --spec /absolute/path/to/job.json
 ```
 
-支持TikTok单/多个公开账号资料；Instagram账号资料、已知帖子/Reel链接、按主页链接发现作品、明确评论结构的可见评论。`collect`会打开并关闭自己的采集页，复用专用浏览器会话；不会清除历史或复制Cookie。Instagram可用性仍需使用者登录后实测。详细字段与限制见 [Instagram](references/platforms/instagram.md) 和 [TikTok](references/platforms/tiktok.md)。
+支持TikTok单/多个公开账号资料；Instagram账号资料、已知帖子/Reel链接、按主页链接发现作品、明确评论结构的可见评论。`collect`会打开并关闭自己的采集页，复用专用浏览器会话；不会清除历史或复制Cookie。这条Instagram DOM路径的登录后可用性仍待实测；上方匿名SSR路径单独登记。详细字段与限制见 [Instagram](references/platforms/instagram.md) 和 [TikTok](references/platforms/tiktok.md)。
 
 新路径直接导出`data.json`、`data.csv`、`report.json`，每次使用独立子目录。CSV用`recordKey`核查唯一性；`partial`表示数量不足，`blocked`表示被登录、验证或访问限制阻断，不能仅看文件存在认定成功。未新增这条路径的关键词搜索、定时任务、暂停续采或飞书同步。
 

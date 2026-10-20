@@ -1,0 +1,8 @@
+{
+  "platform": "instagram",
+  "task": "video",
+  "source": "author-links",
+  "urls": ["https://www.instagram.com/instagram/"],
+  "limitPerId": 3,
+  "outputDir": "../collector-output"
+}

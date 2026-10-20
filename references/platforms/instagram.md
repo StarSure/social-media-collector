@@ -4,9 +4,25 @@
 
 ## 当前免登录主页视频需求
 
-v0.3.0匿名入口没有启用Instagram：本轮未获得可确认归属的主页视频列表或逐条play/view/like计数，不满足该需求。不能要求免登录用户自动切换为登录，也不能将资料、已知单帖或离线fixture当作主页视频成功。
+v0.3.0匿名入口已支持公开主页嵌入的视频选集与点赞读取；3条真实GraphVideo均确认owner.username=instagram。3条实际详情嵌入进一步返回video_view_count观看次数与edge_liked_by.count点赞；play_count/video_play_count仍缺失。不能要求免登录用户自动切换为登录，也不能将资料、已知单帖或离线fixture当作主页视频成功。
 
-普通游客主页曾302跳登录后429；其他公开入口测试中，Graph oEmbed主页URL返回400参数错误，这不能解释为必须授权。SDK生成的公开嵌入路径返回200，补充正常JS渲染后可见账号资料、粉丝和帖子总数，但没有实际视频链接；首文档HTML已保留作离线解析。此结果只界定本轮观察到的公开数据，不能推断所有Instagram账号都必须登录。
+普通游客主页曾302跳登录后429；其他公开入口测试中，Graph oEmbed主页URL返回400参数错误，这不能解释为必须授权。SDK生成的公开嵌入路径返回200，正常JS渲染仅见账号资料；解析首文档inline script中s.handle的JSON参数及嵌套contextJSON后，发现context.graphql_media[].shortcode_media。它提供6条确认归属的GraphVideo，本次按上限只输出3条。点赞edge_liked_by.count分别114632、461952、309800；play_count/video_play_count/view_count/video_view_count均缺失。此结果只界定本轮观察到的公开数据，不能推断所有Instagram账号都必须登录。
+
+### 新匿名入口与边界
+
+使用`scripts/anonymous-homepage.mjs`，示例[Instagram匿名视频](../../examples/instagram-videos-anonymous.json)，`platform=instagram/task=video/source=author-links`，`limitPerId`当前为1至6。模块启动新游客context，读取`/username/embed/?cr=1`首文档，纯JSON解码脚本参数，不eval或执行提取到的脚本文本。浏览器正常页面渲染本身可执行平台页面脚本。
+
+只接受明确归属目标账号的Video对象；shortcode区分大小写、去重后限额。从真实发现的shortcode打开各自详情embed，核对作者和shortcode再补字段。导出playCount、viewCount、likeCount、commentCount与fieldSources；两个播放相关字段不能互代，观看/播放两者均缺失或点赞缺失报告partial。此处只有嵌入选集，不保证严格最近、全历史、翻页、评论文本或媒体下载。403/429、登录/挑战即停止整批，不变换身份。
+
+真实详情证据（2026-10-20，三条HTTP200，无账号和用户Cookie）：
+
+| shortcode | video_view_count→viewCount | edge_liked_by.count→likeCount |
+| --- | ---: | ---: |
+| DeroUGDhF2D | 6369903 | 114714 |
+| DeewiSPpCrm | 17677846 | 461975 |
+| DecLR_vvrW6 | 14720514 | 309815 |
+
+详情中路径为gql_data.shortcode_media，主页中为context.graphql_media[].shortcode_media；解析inline ServerJS.handle的JSON字面参数和嵌套JSON字符串，不执行脚本文本。列表与详情取样时间不同，点赞可能变化；以详情快照为准。不能保证任意账号、严格最新排序或完整历史，当前新CLI另做离线验收。
 
 ## 入口
 

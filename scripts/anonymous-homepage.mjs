@@ -6,17 +6,19 @@ import { fileURLToPath } from 'node:url';
 import { loadPlaywright } from './browser.mjs';
 import { parseLocalUrl, assertExternalOutput, recordKey, writeCollection } from './local-browser.mjs';
 import { collectTikTokHomepage } from './tiktok-homepage.mjs';
+import { collectInstagramHomepage } from './instagram-homepage.mjs';
 
 const fail = (code, message) => Object.assign(new Error(message), { code });
 const help = `Anonymous account-homepage videos (Node 20+)
   node scripts/anonymous-homepage.mjs plan --spec job.json
   node scripts/anonymous-homepage.mjs collect --spec job.json [--browser /path/to/Chrome]
 
-Spec: {platform:"tiktok", task:"video", source:"author-links", urls:[], limitPerId:1..10, outputDir?}.
+Spec: {platform:"tiktok"|"instagram", task:"video", source:"author-links", urls:[], limitPerId, outputDir?}.
 Uses official creator embeds for recent video links and public detail-page SSR for metrics.
 The embed contains a selection of at most 10 recent videos; full history is unavailable.
 No CDP, stored profile, account login, API key, proxy rotation, or browser download.
-Instagram anonymous homepage video collection is not yet live verified or enabled here.
+TikTok limit 1..10; Instagram limit 1..6. Instagram video_view_count is viewCount;
+playCount remains separate and null if the platform does not supply play_count.
 Output: JSON, CSV, report.json outside the skill. Missing metrics remain null and partial.
 `;
 
@@ -40,11 +42,11 @@ export function validateAnonymousSpec(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw fail('INVALID_SPEC', 'Spec must be an object.');
   const fields = ['platform', 'task', 'source', 'urls', 'limitPerId', 'outputDir'];
   for (const field of Object.keys(input)) if (!fields.includes(field)) throw fail('INVALID_SPEC', `Unknown anonymous spec field: ${field}`);
-  if (input.platform === 'instagram') throw fail('INSTAGRAM_UNVERIFIED', 'Instagram anonymous homepage video lists and play/like metrics are not live verified; this runner cannot collect them yet.');
-  if (input.platform !== 'tiktok' || input.task !== 'video' || input.source !== 'author-links') throw fail('UNSUPPORTED_TASK', 'Use tiktok/video/author-links for anonymous homepage videos.');
-  if (!Number.isSafeInteger(input.limitPerId) || input.limitPerId < 1 || input.limitPerId > 10) throw fail('INVALID_SPEC', 'limitPerId must be an explicit integer from 1 to 10; the embed is a recent selection.');
+  if (!['tiktok', 'instagram'].includes(input.platform) || input.task !== 'video' || input.source !== 'author-links') throw fail('UNSUPPORTED_TASK', 'Use tiktok|instagram/video/author-links for anonymous homepage videos.');
+  const maximum = input.platform === 'tiktok' ? 10 : 6;
+  if (!Number.isSafeInteger(input.limitPerId) || input.limitPerId < 1 || input.limitPerId > maximum) throw fail('INVALID_SPEC', `limitPerId must be an explicit integer from 1 to ${maximum}; the embed is a recent selection.`);
   if (!Array.isArray(input.urls) || !input.urls.length || input.urls.some(url => typeof url !== 'string')) throw fail('INVALID_SPEC', 'urls must be a nonempty list.');
-  const urls = input.urls.map(url => parseLocalUrl(url, 'tiktok', 'profile').url);
+  const urls = input.urls.map(url => parseLocalUrl(url, input.platform, 'profile').url);
   if (new Set(urls.map(url => url.toLowerCase())).size !== urls.length) throw fail('INVALID_SPEC', 'Duplicate source profiles must be resolved first.');
   const spec = { platform: input.platform, task: input.task, source: input.source, urls, limitPerId: input.limitPerId };
   if (input.outputDir !== undefined) {
@@ -58,13 +60,14 @@ export async function collectAnonymousHomepages(spec, browser) {
   const records = new Map();
   const sources = [];
   for (const url of spec.urls) {
-    const result = await collectTikTokHomepage(browser, { url, limitPerId: spec.limitPerId });
+    const collect = spec.platform === 'tiktok' ? collectTikTokHomepage : collectInstagramHomepage;
+    const result = await collect(browser, { url, limitPerId: spec.limitPerId });
     sources.push(result.source);
     for (const record of result.records) {
       const key = recordKey(record);
       records.set(key, { ...record, recordKey: key, sourceUrls: [url] });
     }
-    if (result.source.status !== 'completed' && !['recent-selection-exhausted', 'required-metrics-unavailable'].includes(result.source.termination)) break;
+    if (result.source.status !== 'completed' && !['recent-selection-exhausted', 'profile-selection-exhausted', 'required-metrics-unavailable'].includes(result.source.termination)) break;
   }
   const completed = sources.length === spec.urls.length && sources.every(source => source.status === 'completed');
   return {
@@ -73,8 +76,8 @@ export async function collectAnonymousHomepages(spec, browser) {
     collectedAt: new Date().toISOString(), loginUsed: false, userSessionRead: false,
     recordCount: records.size, requestedSources: spec.urls.length, processedSources: sources.length,
     sources, records: [...records.values()],
-    coverage: 'official creator embed: selection of at most 10 recent videos; no full-history pagination',
-    metrics: 'public detail SSR stats/statsV2 values as supplied; platform may round counts; missing values are null',
+    coverage: spec.platform === 'tiktok' ? 'official creator embed: selection of at most 10 recent videos; no full-history pagination' : 'public profile embed selection only; no full-history pagination; at most 6 requested',
+    metrics: spec.platform === 'tiktok' ? 'public detail SSR stats/statsV2 values as supplied; platform may round counts; missing values are null' : 'public embedded media fields only; playCount and viewCount are distinct; missing values are null',
   };
 }
 

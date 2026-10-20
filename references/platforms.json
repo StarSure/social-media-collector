@@ -530,7 +530,27 @@
             ]
           }
         }
-      ]
+      ],
+      "anonymousHomepage": {
+        "runner": "scripts/anonymous-homepage.mjs",
+        "state": "limited-live-probe-verified",
+        "date": "2026-10-20",
+        "task": "video",
+        "source": "author-links",
+        "limitPerId": {
+          "min": 1,
+          "max": 6
+        },
+        "coverage": "public embed video selection only; no full history or latest-order guarantee",
+        "cases": [
+          "Public profile embed SSR exposed 6 matching GraphVideo objects; limit3 retained.",
+          "Three actually discovered video embed detail pages returned video_view_count and edge_liked_by.count without login."
+        ],
+        "limitations": [
+          "viewCount is video_view_count; playCount is null when play_count/video_play_count absent.",
+          "New CLI is offline tested separately; live probe does not establish long-term availability."
+        ]
+      }
     }
   ]
 }

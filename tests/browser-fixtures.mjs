@@ -8,6 +8,7 @@ import { readInstagramPage } from '../scripts/instagram-page.mjs';
 import { validateLocalSpec, collectWithContext, writeCollection } from '../scripts/local-browser.mjs';
 import { instagramBrowserFixtures } from './instagram-browser-fixtures.mjs';
 import { runAnonymousBrowserFixtures } from './anonymous-browser-fixtures.mjs';
+import { runInstagramAnonymousBrowserFixtures } from './instagram-anonymous-browser-fixtures.mjs';
 
 const { playwright } = await loadPlaywright();
 const candidates = [process.env.SOCIAL_BROWSER_EXECUTABLE, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium', playwright.chromium.executablePath()].filter(Boolean);
@@ -90,3 +91,4 @@ try {
   await fs.rm(directory, { recursive: true, force: true });
 }
 console.log(JSON.stringify(await runAnonymousBrowserFixtures({ playwright, executablePath }), null, 2));
+console.log(JSON.stringify(await runInstagramAnonymousBrowserFixtures({ playwright, executablePath }), null, 2));
