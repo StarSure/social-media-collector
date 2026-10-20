@@ -6,17 +6,18 @@
 
 ## 能力与验证范围
 
-| 平台 | 包内任务 | 2026-10-19 的真实验证 |
+| 平台 | 包内任务 | 验证范围（2026-10-20更新） |
 | --- | --- | --- |
 | 小红书 | 笔记、博主、评论 | 笔记链接3条、关键词两页25条、一级评论5条、博主3位、暂停续采与历史导出 |
 | B站 | 视频、UP主、评论、弹幕 | 单条视频及 Excel 导出 |
 | 抖音 | 达人、作品、评论 | 静态核对，待逐场景实测 |
 | 快手 | 达人、作品、评论 | 静态核对，待逐场景实测 |
-| TikTok | 达人、作品、评论 | 静态核对，待逐场景实测 |
+| TikTok | 原扩展达人、作品、评论；新增独立公开资料读取 | 新路径已匿名读取真实账号资料；作品列表遇403，其余待验 |
+| Instagram | 独立本地资料、帖子/Reels、可见评论采集器 | 合成页面与离线流程验证；登录后实采待验 |
 | 巨量星图 | 搜索、达人、作品 | 静态核对，待逐场景实测 |
 | 蒲公英 | 搜索、博主、邀约记录、笔记 | 静态核对，待逐场景实测 |
 
-共7个平台、23类任务。既有验证不能保证接口今天仍可用；新平台或新场景先做少量探针。完整记录见 [验收说明](references/verification.md)。
+原扩展包含7个平台、23类任务；新增Instagram的3类本地命令任务，以及TikTok公开资料补充路径。Instagram不在原扩展侧栏中。既有验证不能保证接口今天仍可用；新场景先做少量探针。完整记录见 [验收说明](references/verification.md)。
 
 ## 安装到 Codex
 
@@ -79,6 +80,29 @@ node scripts/browser.mjs prepare --endpoint http://127.0.0.1:9337 --spec example
 
 手动装载不需要 Node 或 Playwright。平台页面仍需相应登录、签名环境与权限。
 
+## Instagram与TikTok新增本地采集
+
+v0.2.0新增的自有采集器直接读取Chrome中公开呈现的DOM、JSON-LD或TikTok资料SSR数据，不调用商业数据API，也不需要服务商密钥。Instagram是实验实现，本轮用户没有可用账号，因此只做代码和离线验证；游客探针跳转登录页并遇到429后已停止重试。
+
+先按上文启动专用浏览器，再检查新任务：
+
+```sh
+node scripts/local-browser.mjs plan --spec examples/tiktok-profile-local.json
+node scripts/local-browser.mjs plan --spec examples/instagram-posts-local.json
+```
+
+复制相应示例为自己的任务文件，替换目标链接和`outputDir`（必须在Skill目录之外）。执行：
+
+```sh
+node scripts/local-browser.mjs collect --endpoint http://127.0.0.1:9337 --spec /absolute/path/to/job.json
+```
+
+支持TikTok单/多个公开账号资料；Instagram账号资料、已知帖子/Reel链接、按主页链接发现作品、明确评论结构的可见评论。`collect`会打开并关闭自己的采集页，复用专用浏览器会话；不会清除历史或复制Cookie。Instagram可用性仍需使用者登录后实测。详细字段与限制见 [Instagram](references/platforms/instagram.md) 和 [TikTok](references/platforms/tiktok.md)。
+
+新路径直接导出`data.json`、`data.csv`、`report.json`，每次使用独立子目录。CSV用`recordKey`核查唯一性；`partial`表示数量不足，`blocked`表示被登录、验证或访问限制阻断，不能仅看文件存在认定成功。未新增这条路径的关键词搜索、定时任务、暂停续采或飞书同步。
+
+JSON保留ID和正文原值。CSV对可能被表格软件当公式的文本加前导单引号；导入Excel时应将长数字ID列设为文本，以免被表格软件改成近似数字。
+
 ## 导出与核验
 
 可以直接使用原界面导出；辅助导出命令只接受已完成的任务：
@@ -94,12 +118,15 @@ Windows 的 Python 命令通常为 `py -3`；替换上面的 `python3` 即可。
 
 ```sh
 npm test
+npm run test:browser
 python3 -m unittest discover -s tests -p 'test_*.py'
 npm run check
-python3 scripts/package_skill.py --output dist/social-media-collector-0.1.0.zip
+python3 scripts/package_skill.py --output dist/social-media-collector-0.2.0.zip
 ```
 
 打包入口先核验29个运行资源的 SHA-256，只打包明确列出的项目文件；不会包含 `.git`、`node_modules`、浏览器配置或采集结果。扩展是编译后的运行快照，不是原厂 TypeScript 源码。修改扩展后需审阅变化并更新 `assets/runtime-manifest.json` 中相应摘要。
+
+`test:browser`使用本机Chrome加载本地合成HTML，所有社媒请求都由测试拦截，不代表真实平台采集通过；可用`SOCIAL_BROWSER_EXECUTABLE`指定已安装浏览器。
 
 ## 数据与来源
 

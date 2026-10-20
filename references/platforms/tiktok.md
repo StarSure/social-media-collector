@@ -1,6 +1,14 @@
 # TikTok 采集
 
-证据日期：2026-10-19；三类任务均仅静态核对。
+原扩展证据日期：2026-10-19，三类任务均仅静态核对。2026-10-20另新增自有公开账号资料读取路径，已完成有限匿名实测；两种路径不能混同。
+
+## 新增公开资料路径
+
+`scripts/local-browser.mjs`的`platform=tiktok/task=author/source=links`读取真实主页的`__UNIVERSAL_DATA_FOR_REHYDRATION__.__DEFAULT_SCOPE__['webapp.user-detail'].userInfo`，只提取user/stats中的公开白名单字段，不返回app context、Cookie或会话数据。示例见 [TikTok资料任务](../../examples/tiktok-profile-local.json)。先plan，再连接专用Chrome执行collect；输出JSON/CSV及状态报告。
+
+本次fresh headless Chrome无账号、无用户Cookie，公开@tiktok主页HTTP200，读到真实用户名、字符串ID、简介、头像和统计。缺失数字保持null；不安全的数值ID拒绝解析。该结果说明此公开资料样本不必登录，不能推广成所有账号都可免登录。
+
+独立页面探针中作品列表请求先200后403，页面显示加载错误，因此没有补造作品链接或继续单作品。后续资料适配器烟测主动阻止未使用的/api/请求，仅验证真实SSR资料，未替换平台页面响应。原扩展的作品、评论、搜索与RPA链路仍待真实验收。
 
 ## 任务与入口
 

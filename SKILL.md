@@ -1,11 +1,13 @@
 ---
 name: social-media-collector
-description: 使用本地扩展和真实浏览器采集小红书、抖音、B站、快手、TikTok、巨量星图、蒲公英的笔记/作品、博主、评论等数据，处理分页、暂停续采、历史回查及本地导出验收。适用于社媒助手采集、社媒链接或关键词采集、跨平台采集流程复用；不用于发布、商品上架或单纯撰写内容。
+description: 使用本地扩展和浏览器采集小红书、抖音、B站、快手、TikTok、Instagram、巨量星图、蒲公英的公开资料、作品和评论，导出并核验；Instagram为离线验证阶段。适用于社媒助手、链接或关键词采集，不用于发布或商品上架。
 ---
 
 # 多平台社媒采集
 
 复用`assets/extension/`中的本地运行代码，通过真实平台页面已有签名、登录状态和原任务流程取数。随包包含请求器、分页、解析、字段映射、缓存和导出，不是只有说明文档。不要改成没有页面签名的通用HTTP爬虫。
+
+Instagram与新增TikTok公开资料路径使用自有`scripts/local-browser.mjs`读取浏览器页面，不接商业数据API，不属于原扩展侧栏。Instagram尚无登录后实采证据；不得将离线fixture通过写成线上成功。
 
 ## 选平台和任务
 
@@ -18,10 +20,22 @@ description: 使用本地扩展和真实浏览器采集小红书、抖音、B站
 - [B站：UP主/视频/评论/弹幕](references/platforms/bilibili.md)
 - [快手：达人/作品/评论](references/platforms/kuaishou.md)
 - [TikTok：达人/作品/评论](references/platforms/tiktok.md)
+- [Instagram：资料/帖子与Reels/可见评论（实验）](references/platforms/instagram.md)
 - [巨量星图：搜索/达人/作品](references/platforms/xingtu.md)
 - [蒲公英：搜索/博主/邀约记录/笔记](references/platforms/pgy.xiaohongshu.md)
 
-`verification`记录具体日期和场景。23类代码不等于23类已线上通过；不能把小红书/B站样本外推到其他平台、RPA或外部同步。
+`verification`记录具体日期和场景。原扩展7平台23任务，另有Instagram三个本地任务；代码存在不等于线上通过。TikTok只有新增SSR资料路径有有限匿名实测，不能外推到原扩展、视频、评论或搜索。
+
+## Instagram与TikTok本地资料
+
+这两种新路径先读对应平台参考，使用独立任务JSON，不传`mode`或`keywords`。`plan`只检查参数；`collect`会在已授权专用浏览器中新建标签页执行采集，并关闭自己创建的页面。Instagram作者作品与评论必须显式给`limitPerId`。
+
+```sh
+node scripts/local-browser.mjs plan --spec examples/instagram-posts-local.json
+node scripts/local-browser.mjs collect --endpoint http://127.0.0.1:9337 --spec /absolute/path/to/job.json
+```
+
+执行前把任务的`outputDir`改为用户指定的Skill目录之外位置。输出JSON、CSV和report.json；不足数量为partial，登录/验证码/403/429等为blocked，遇阻即停。评论无天然ID时`recordKey`明确标记derived；不要称其为平台评论ID。只取页面可见媒体，轮播/评论/列表全量完整性未保证；不支持新路径的关键词搜索、定时、断点续采或外部同步。原扩展任务继续按下述流程运行。
 
 ## 运行
 

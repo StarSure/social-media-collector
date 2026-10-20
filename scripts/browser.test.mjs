@@ -105,3 +105,10 @@ test('runtime identity rejects changed collection bundles even when backend hash
   assert.deepEqual(runtimeMismatches(expected, expected), []);
   assert.deepEqual(runtimeMismatches(expected, []), expected.map(item => item.path));
 });
+
+test('Instagram is routed to the local collector without connecting to the original extension', () => {
+  assert.throws(() => validateSpec({ platform: 'instagram', task: 'profile', urls: ['https://www.instagram.com/sample/'] }, catalog), /local-browser/);
+  const result = spawnSync(process.execPath, [file, 'open', '--platform', 'instagram', '--task', 'profile', '--endpoint', 'http://127.0.0.1:1'], { encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).status, 'local-collector-required');
+});

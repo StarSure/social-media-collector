@@ -284,6 +284,20 @@
           "verification": {
             "state": "static-only",
             "cases": []
+          },
+          "localVerification": {
+            "date": "2026-10-20",
+            "state": "limited-live-verified",
+            "runner": "scripts/local-browser.mjs",
+            "cases": [
+              "Fresh anonymous Chrome: public @tiktok profile SSR returned one real record."
+            ],
+            "excluded": [
+              "Legacy extension API/RPA",
+              "keyword search",
+              "video list",
+              "comments"
+            ]
           }
         },
         {
@@ -434,6 +448,67 @@
             "cases": []
           },
           "notes": "search 来自 /pgy.xiaohongshu/hidden-collect/search-note 热门商业内容入口，依赖 params。"
+        }
+      ]
+    },
+    {
+      "id": "instagram",
+      "name": "Instagram",
+      "aliases": [
+        "instagram",
+        "ins",
+        "ig"
+      ],
+      "homeUrl": "https://www.instagram.com/",
+      "hosts": [
+        "www.instagram.com",
+        "instagram.com"
+      ],
+      "reference": "references/platforms/instagram.md",
+      "runner": "local-browser",
+      "tasks": [
+        {
+          "id": "profile",
+          "label": "公开账号资料",
+          "route": "local-browser:instagram/profile",
+          "sources": [
+            "links"
+          ],
+          "verification": {
+            "state": "offline-tested",
+            "cases": [
+              "Synthetic DOM and normalization fixtures only; authenticated live verification pending."
+            ]
+          }
+        },
+        {
+          "id": "post",
+          "label": "帖子与Reels",
+          "route": "local-browser:instagram/post",
+          "sources": [
+            "links",
+            "author-links"
+          ],
+          "verification": {
+            "state": "offline-tested",
+            "cases": [
+              "Synthetic single-post and profile-to-posts flow only; authenticated live verification pending."
+            ]
+          }
+        },
+        {
+          "id": "comment",
+          "label": "页面可见评论",
+          "route": "local-browser:instagram/comment",
+          "sources": [
+            "links"
+          ],
+          "verification": {
+            "state": "offline-tested",
+            "cases": [
+              "Explicit comment DOM only; pagination completeness not live verified."
+            ]
+          }
         }
       ]
     }

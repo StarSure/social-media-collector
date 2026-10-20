@@ -1,0 +1,7 @@
+{
+  "platform": "tiktok",
+  "task": "author",
+  "source": "links",
+  "urls": ["https://www.tiktok.com/@tiktok"],
+  "outputDir": "../social-collector-output/tiktok"
+}

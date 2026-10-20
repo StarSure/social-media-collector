@@ -1,6 +1,6 @@
 {
   "name": "social-media-collector-skill",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Codex skill and browser helpers for verified local social media collection",
@@ -8,7 +8,8 @@
   "repository": { "type": "git", "url": "https://github.com/StarSure/social-media-collector.git" },
   "engines": { "node": ">=20" },
   "scripts": {
-    "test": "node --test scripts/browser.test.mjs tests/backend.test.mjs tests/xhs-keyword.test.mjs",
+    "test": "node --test",
+    "test:browser": "node tests/browser-fixtures.mjs",
     "check": "node scripts/check-package.mjs",
     "plan": "node scripts/browser.mjs plan --spec examples/xiaohongshu-keyword.json"
   },

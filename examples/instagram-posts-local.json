@@ -1,0 +1,8 @@
+{
+  "platform": "instagram",
+  "task": "post",
+  "source": "author-links",
+  "urls": ["https://www.instagram.com/instagram/"],
+  "limitPerId": 3,
+  "outputDir": "../social-collector-output/instagram"
+}

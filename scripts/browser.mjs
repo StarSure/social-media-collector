@@ -81,6 +81,7 @@ export function validateSpec(spec, catalog) {
   for (const field of Object.keys(spec)) if (!allowedSpecFields.has(field)) throw new Error(`Unknown spec field: ${field}`);
   if (typeof spec.platform !== 'string' || typeof spec.task !== 'string') throw new Error('platform and task must be strings');
   const { platform, task } = selectTask(catalog, spec.platform, spec.task);
+  if (platform.runner === 'local-browser') throw new Error('Use scripts/local-browser.mjs plan/collect for this platform; it is not part of the original extension UI.');
   const normalized = { platform: platform.id, task: task.id };
   for (const key of ['urls', 'keywords']) {
     if (spec[key] !== undefined) {
@@ -266,6 +267,7 @@ async function openOrPrepare(options, catalog, preparing) {
   const spec = preparing ? await readSpec(options.spec) : null;
   const plan = preparing ? validateSpec(spec, catalog) : null;
   const { platform, task } = selectTask(catalog, preparing ? plan.spec.platform : options.platform, preparing ? plan.spec.task : options.task);
+  if (platform.runner === 'local-browser') return { status: 'local-collector-required', collectionStarted: false, instruction: 'Use scripts/local-browser.mjs plan/collect; no extension platform route is registered.' };
   if (plan?.requiresPageContext) return { status: 'page-context-required', plan, collectionStarted: false, instruction: 'Use the original platform page collection entry; required router state and filters cannot be fabricated by this helper.' };
   return withBrowser(options.endpoint, async browser => {
     const { panel, ...result } = await openTask(browser, platform, task);
