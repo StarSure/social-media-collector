@@ -105,6 +105,7 @@ export async function main(argv = process.argv.slice(2)) {
   const browser = await playwright.chromium.launch({ headless: true, executablePath });
   try {
     const result = await collectAnonymousHomepages(spec, browser);
+    result.execution = { headless: true, persistentProfile: false, context: 'fresh-anonymous', storageStateLoaded: false, connectedViaCDP: false };
     console.log(JSON.stringify(await writeCollection(result, spec.outputDir), null, 2));
     if (result.status !== 'completed') process.exitCode = 2;
   } finally { await browser.close(); }
