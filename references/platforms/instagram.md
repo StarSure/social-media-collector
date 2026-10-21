@@ -1,5 +1,7 @@
 # Instagram本地采集（实验）
 
+v0.4.0新增[匿名最新目标和批量报告](../anonymous-batch.md)：selection=latest使用普通游客主页及真实公开列表，保留发布时间并核验最新覆盖，旧embed仍限6。2026-10-21新模块首屏302要求登录，在跟随前停止，0滚动、0条、latestVerified=false；最新20条仍未真实通过。
+
 2026-10-20新增。用户选择自建本地能力，未接入Apify、Bright Data或其他付费采集API。本轮没有可用Instagram账号，按用户要求完成代码和离线验证；不能宣称已在真实登录后的Instagram跑通。
 
 ## 当前免登录主页视频需求

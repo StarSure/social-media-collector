@@ -9,6 +9,7 @@ import { validateLocalSpec, collectWithContext, writeCollection } from '../scrip
 import { instagramBrowserFixtures } from './instagram-browser-fixtures.mjs';
 import { runAnonymousBrowserFixtures } from './anonymous-browser-fixtures.mjs';
 import { runInstagramAnonymousBrowserFixtures } from './instagram-anonymous-browser-fixtures.mjs';
+import { runLatestBrowserFixtures } from './latest-browser-fixtures.mjs';
 
 const { playwright } = await loadPlaywright();
 const candidates = [process.env.SOCIAL_BROWSER_EXECUTABLE, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium', playwright.chromium.executablePath()].filter(Boolean);
@@ -92,3 +93,4 @@ try {
 }
 console.log(JSON.stringify(await runAnonymousBrowserFixtures({ playwright, executablePath }), null, 2));
 console.log(JSON.stringify(await runInstagramAnonymousBrowserFixtures({ playwright, executablePath }), null, 2));
+console.log(JSON.stringify(await runLatestBrowserFixtures({ playwright, executablePath }), null, 2));

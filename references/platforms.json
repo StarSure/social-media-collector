@@ -345,6 +345,20 @@
           "New CLI is offline tested separately; live probe does not establish long-term availability.",
           "Counts are platform-reported and may be rounded."
         ]
+      },
+      "latestHomepage": {
+        "runner": "scripts/anonymous-homepage.mjs",
+        "selection": "latest",
+        "date": "2026-10-21",
+        "state": "implemented-offline-tested-live-blocked",
+        "limitPerId": {
+          "min": 1,
+          "max": 100
+        },
+        "acceptanceTarget": 20,
+        "latest20LiveVerified": false,
+        "reference": "references/anonymous-batch.md",
+        "limitation": "Normal anonymous profile must expose an ordered, verifiable public list. Embed selections do not qualify. Current live probe is blocked; parameter limits do not establish availability."
       }
     },
     {
@@ -550,6 +564,20 @@
           "viewCount is video_view_count; playCount is null when play_count/video_play_count absent.",
           "New CLI is offline tested separately; live probe does not establish long-term availability."
         ]
+      },
+      "latestHomepage": {
+        "runner": "scripts/anonymous-homepage.mjs",
+        "selection": "latest",
+        "date": "2026-10-21",
+        "state": "implemented-offline-tested-live-blocked",
+        "limitPerId": {
+          "min": 1,
+          "max": 100
+        },
+        "acceptanceTarget": 20,
+        "latest20LiveVerified": false,
+        "reference": "references/anonymous-batch.md",
+        "limitation": "Normal anonymous profile must expose an ordered, verifiable public list. Embed selections do not qualify. Current live probe is blocked; parameter limits do not establish availability."
       }
     }
   ]

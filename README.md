@@ -82,6 +82,13 @@ node scripts/browser.mjs prepare --endpoint http://127.0.0.1:9337 --spec example
 
 ## TikTok与Instagram免登录主页视频
 
+v0.4.0新增显式`selection: "latest"`任务、发布时间核验、账号来源校对、断点和完整度报告。**每账号最新20条仍未真实验收通过**：当前TikTok自然视频列表HTTP403，Instagram游客主页要求登录；嵌入选集的成功不能替代最新20条。配置可设20代表采集目标，不代表平台一定提供20条。具体用法和验收条件见[匿名批量采集](references/anonymous-batch.md)。
+
+```sh
+node scripts/anonymous-homepage.mjs plan --spec examples/tiktok-latest20-anonymous.json
+node scripts/anonymous-homepage.mjs plan --spec examples/instagram-latest20-anonymous.json
+```
+
 v0.3.0新增`scripts/anonymous-homepage.mjs`，独立启动临时无头Chrome，使用全新游客上下文，不连接现有浏览器、不载入用户profile或Cookie。TikTok从官方主页嵌入发现真实视频链接，再读详情SSR；Instagram纯JSON解析公开主页嵌入首文档中的视频对象。提取器不执行脚本文本，不接商业采集API。
 
 ```sh
@@ -141,7 +148,7 @@ npm test
 npm run test:browser
 python3 -m unittest discover -s tests -p 'test_*.py'
 npm run check
-python3 scripts/package_skill.py --output dist/social-media-collector-0.3.2.zip
+python3 scripts/package_skill.py --output dist/social-media-collector-0.4.0.zip
 ```
 
 打包入口先核验29个运行资源的 SHA-256，只打包明确列出的项目文件；不会包含 `.git`、`node_modules`、浏览器配置或采集结果。扩展是编译后的运行快照，不是原厂 TypeScript 源码。修改扩展后需审阅变化并更新 `assets/runtime-manifest.json` 中相应摘要。

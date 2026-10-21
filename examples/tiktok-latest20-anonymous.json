@@ -1,0 +1,16 @@
+{
+  "platform": "tiktok",
+  "task": "video",
+  "source": "author-links",
+  "selection": "latest",
+  "urls": [
+    "https://www.tiktok.com/@tiktok"
+  ],
+  "limitPerId": 20,
+  "sourceRefs": {
+    "https://www.tiktok.com/@tiktok": [
+      "Source sheet!E2"
+    ]
+  },
+  "outputDir": "../collector-output"
+}

@@ -1,0 +1,16 @@
+{
+  "platform": "instagram",
+  "task": "video",
+  "source": "author-links",
+  "selection": "latest",
+  "urls": [
+    "https://www.instagram.com/instagram/"
+  ],
+  "limitPerId": 20,
+  "sourceRefs": {
+    "https://www.instagram.com/instagram/": [
+      "Source sheet!E2"
+    ]
+  },
+  "outputDir": "../collector-output"
+}
